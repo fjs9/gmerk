@@ -1,0 +1,27 @@
+{
+    "name": "fjs9/gmerk",
+    "type": "phpbb-extension",
+    "description": "Integracja z systemami stemplowymi",
+    "homepage": "",
+    "version": "1.0.0-dev",
+    "time": "2023-01-26",
+    "license": "GPL-2.0-only",
+    "authors": [
+        {
+            "name": "FJS",
+            "email": "fedemerk5@gmail.com",
+            "homepage": "",
+            "role": ""
+        }
+    ],
+    "require": {
+        "php": ">=5.4",
+        "composer/installers": "~1.0"
+    },
+    "extra": {
+        "display-name": "Gmerk",
+        "soft-require": {
+            "phpbb/phpbb": ">=3.2.0,<4.0.0@dev"
+        }
+    }
+}
