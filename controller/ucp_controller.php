@@ -11,18 +11,15 @@
 namespace fjs9\gmerk\controller;
 
 /**
- * Gmerk ACP controller.
+ * Gmerk UCP controller.
  */
-class acp_controller
+class ucp_controller
 {
-	/** @var \phpbb\config\config */
-	protected $config;
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
 
 	/** @var \phpbb\language\language */
 	protected $language;
-
-	/** @var \phpbb\log\log */
-	protected $log;
 
 	/** @var \phpbb\request\request */
 	protected $request;
@@ -39,18 +36,16 @@ class acp_controller
 	/**
 	 * Constructor.
 	 *
-	 * @param \phpbb\config\config		$config		Config object
-	 * @param \phpbb\language\language	$language	Language object
-	 * @param \phpbb\log\log			$log		Log object
-	 * @param \phpbb\request\request	$request	Request object
-	 * @param \phpbb\template\template	$template	Template object
-	 * @param \phpbb\user				$user		User object
+	 * @param \phpbb\db\driver\driver_interface	$db			Database object
+	 * @param \phpbb\language\language			$language	Language object
+	 * @param \phpbb\request\request			$request	Request object
+	 * @param \phpbb\template\template			$template	Template object
+	 * @param \phpbb\user						$user		User object
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\language\language $language, \phpbb\log\log $log, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
 	{
-		$this->config	= $config;
+		$this->db		= $db;
 		$this->language	= $language;
-		$this->log		= $log;
 		$this->request	= $request;
 		$this->template	= $template;
 		$this->user		= $user;
@@ -63,20 +58,28 @@ class acp_controller
 	 */
 	public function display_options()
 	{
-		// Add our common language file
-		$this->language->add_lang('common', 'fjs9/gmerk');
-
 		// Create a form key for preventing CSRF attacks
-		add_form_key('fjs9_gmerk_acp');
+		add_form_key('fjs9_gmerk_ucp');
 
 		// Create an array to collect errors that will be output to the user
 		$errors = [];
+
+		// Request the options the user can configure
+
+
+		// IF ISSET GMERK_STEMPEL, THEN WYKONAJ ŁĄCZENIE ZE STEMPLEM
+
+
+		$data = [
+			'gmerk_rachunek_mbp' => $this->request->variable('gmerk_rachunek_mbp', (empty($this->user->data['gmerk_rachunek_mbp']))?'0':$this->user->data['gmerk_rachunek_mbp']),
+			// IF ISSET STEMPEL, THEN DODAJ STEMPEL
+		];
 
 		// Is the form being submitted to us?
 		if ($this->request->is_set_post('submit'))
 		{
 			// Test if the submitted form is valid
-			if (!check_form_key('fjs9_gmerk_acp'))
+			if (!check_form_key('fjs9_gmerk_ucp'))
 			{
 				$errors[] = $this->language->lang('FORM_INVALID');
 			}
@@ -85,15 +88,16 @@ class acp_controller
 			if (empty($errors))
 			{
 				// Set the options the user configured
-				$this->config->set('fjs9_gmerk_klucz_stempel', $this->request->variable('fjs9_gmerk_klucz_stempel', '0'));
-				$this->config->set('fjs9_gmerk_klucz_mbp', $this->request->variable('fjs9_gmerk_klucz_mbp', '0'));
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET ' . $this->db->sql_build_array('UPDATE', $data) . '
+					WHERE user_id = ' . (int) $this->user->data['user_id'];
+				$this->db->sql_query($sql);
 
-				// Add option settings change action to the admin log
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_ACP_GMERK_SETTINGS');
-
-				// Option settings have been updated and logged
-				// Confirm this to the user and provide link back to previous page
-				trigger_error($this->language->lang('ACP_GMERK_SETTING_SAVED') . adm_back_link($this->u_action));
+				// Option settings have been updated
+				// Confirm this to the user and provide (automated) link back to previous page
+				meta_refresh(3, $this->u_action);
+				$message = $this->language->lang('UCP_GMERK_SAVED') . '<br /><br />' . $this->language->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
+				trigger_error($message);
 			}
 		}
 
@@ -104,10 +108,9 @@ class acp_controller
 			'S_ERROR'		=> $s_errors,
 			'ERROR_MSG'		=> $s_errors ? implode('<br />', $errors) : '',
 
-			'U_ACTION'		=> $this->u_action,
+			'U_UCP_ACTION'	=> $this->u_action,
 
-			'FJS9_GMERK_KLUCZ_STEMPEL'	=> $this->config['fjs9_gmerk_klucz_stempel'],
-			'FJS9_GMERK_KLUCZ_MBP'	=> $this->config['fjs9_gmerk_klucz_mbp'],
+			'S_RACHUNEK_MBP'	=> $data['gmerk_rachunek_mbp']
 		]);
 	}
 
