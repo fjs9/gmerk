@@ -1,0 +1,3 @@
+#fjs9_gmerk_controller:
+ #   path: /demo/{name}
+  #  defaults: { _controller: fjs9.gmerk.controller.main:handle }

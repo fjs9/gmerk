@@ -1,0 +1,55 @@
+imports:
+    - { resource: parameters.yml }
+
+services:
+    fjs9.gmerk.controller.main:
+        class: fjs9\gmerk\controller\main_controller
+        arguments:
+            - '@config'
+            - '@controller.helper'
+            - '@template'
+            - '@language'
+
+    fjs9.gmerk.controller.acp:
+        class: fjs9\gmerk\controller\acp_controller
+        arguments:
+            - '@config'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
+
+    fjs9.gmerk.controller.ucp:
+        class: fjs9\gmerk\controller\ucp_controller
+        arguments:
+            - '@dbal.conn'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@user'
+
+    fjs9.gmerk.service:
+        class: fjs9\gmerk\service
+        arguments:
+            - '@user'
+            - '%fjs9.gmerk.tables.gmerk_table%'
+
+    fjs9.gmerk.listener:
+        class: fjs9\gmerk\event\main_listener
+        arguments:
+            - '@language'
+            - '@controller.helper'
+            - '@template'
+            - '%core.php_ext%'
+        tags:
+            - { name: event.listener }
+
+    fjs9.gmerk.notification.type.sample:
+        class: fjs9\gmerk\notification\type\sample
+        shared: false # service MUST not be shared for this to work!
+        parent: notification.type.base
+        calls:
+            - [set_controller_helper, ['@controller.helper']]
+        tags:
+            - { name: notification.type }

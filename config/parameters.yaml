@@ -1,0 +1,2 @@
+parameters:
+    fjs9.gmerk.tables.gmerk_table: '%core.table_prefix%gmerk'
