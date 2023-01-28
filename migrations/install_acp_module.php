@@ -10,21 +10,17 @@
 
 /**
  * CONFIG JEST NASTĘPUJĄCY:
- * fedemerk_gmerk_klucz_stempel
- * fedemerk_gmerk_klucz_mbp
+ * fjs9_gmerk_klucz_stempel
+ * fjs9_gmerk_klucz_mbp
  */
 
-namespace fedemerk\gmerk\migrations;
+namespace fjs9\gmerk\migrations;
 
 class install_acp_module extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		if (isset($this->config['fedemerk_gmerk_klucz_stempel'])) {
-			return isset($this->config['fedemerk_gmerk_klucz_mbp']);
-		} else {
-			return false;
-		}
+		return isset($this->config['fjs9_gmerk_klucz_stempel']);
 	}
 
 	public static function depends_on()
@@ -35,8 +31,10 @@ class install_acp_module extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return [
-			['config.add', ['fedemerk_gmerk_klucz_stempel', '0']],
-			['config.add', ['fedemerk_gmerk_klucz_mbp', '0']],
+			['config.add', ['fjs9_gmerk_klucz_stempel', '0']],
+			['config.add', ['fjs9_gmerk_klucz_mbp', '0']],
+			['config.add', ['fjs9_gmerk_wyswietl_stempel', '0']],
+			['config.add', ['fjs9_gmerk_wyswietl_saldo', '0']],
 
 			['module.add', [
 				'acp',
@@ -47,7 +45,7 @@ class install_acp_module extends \phpbb\db\migration\migration
 				'acp',
 				'ACP_GMERK_TITLE',
 				[
-					'module_basename'	=> '\fedemerk\gmerk\acp\main_module',
+					'module_basename'	=> '\fjs9\gmerk\acp\main_module',
 					'modes'				=> ['settings'],
 				],
 			]],
